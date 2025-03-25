@@ -1,6 +1,5 @@
 package com.example.fotleague.screens.leaderboard
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fotleague.AuthStatus
@@ -121,7 +120,6 @@ class LeaderboardViewModel @Inject constructor(
     private suspend fun getGlobalScores(numOfScores: Int) {
         val scoresResponse = api.getGlobalScores(numOfScores)
         val scoresBody = scoresResponse.body()
-        Log.d("SCORE", scoresBody?.get(0)?.score.toString())
         if (scoresResponse.isSuccessful && scoresBody != null) {
             _scoresTableState.update { state ->
                 state.copy(
