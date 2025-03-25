@@ -75,6 +75,10 @@ fun SignupScreen(
                 isPasswordVisible = state.isPasswordVisible,
                 togglePasswordVisibility = { viewModel.onEvent(SignUpEvent.TogglePasswordVisibility) },
                 setPassword = { viewModel.onEvent(SignUpEvent.SetPassword(it)) },
+                confirmPassword = state.confirmPassword,
+                isConfirmPasswordVisible = state.isConfirmPasswordVisible,
+                toggleConfirmPasswordVisibility = { viewModel.onEvent(SignUpEvent.ToggleConfirmPasswordVisibility) },
+                setConfirmPassword = { viewModel.onEvent(SignUpEvent.SetConfirmPassword(it)) },
                 onSignUpClick = { viewModel.onEvent(SignUpEvent.SignUp) }
             )
         }
@@ -87,13 +91,17 @@ private fun SignupScreenContent(
     topPadding: Dp,
     isLoading: Boolean,
     username: String,
+    setUsername: (String) -> Unit,
     email: String,
     setEmail: (String) -> Unit,
     password: String,
     isPasswordVisible: Boolean,
     togglePasswordVisibility: () -> Unit,
     setPassword: (String) -> Unit,
-    setUsername: (String) -> Unit,
+    confirmPassword: String,
+    isConfirmPasswordVisible: Boolean,
+    toggleConfirmPasswordVisibility: () -> Unit,
+    setConfirmPassword: (String) -> Unit,
     onSignUpClick: () -> Unit
 ) {
 
@@ -142,14 +150,48 @@ private fun SignupScreenContent(
                     }
                 }
             )
+            TextField(
+                value = confirmPassword,
+                onValueChange = { setConfirmPassword(it) },
+                colors = TextFieldDefaults.colors(unfocusedContainerColor = DarkGray),
+                label = { Text(text = "Confirm Password") },
+                visualTransformation = if (isConfirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                trailingIcon = {
+                    val image = if (isConfirmPasswordVisible)
+                        Icons.Filled.Visibility
+                    else Icons.Filled.VisibilityOff
+
+                    val description =
+                        if (isConfirmPasswordVisible) "Hide password" else "Show password"
+
+                    IconButton(onClick = toggleConfirmPasswordVisibility) {
+                        Icon(imageVector = image, description)
+                    }
+                }
+            )
         }
 
         PrimaryButton(
             onClick = onSignUpClick,
             isDisabled = isLoading
         ) {
-            Text(text = if (!isLoading) "Create account" else "Signing up...", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            Text(
+                text = if (!isLoading) "Create account" else "Signing up...",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
+            )
         }
+
+        Text(
+            text = "Your password must:\n" +
+                    "- Be at least 8 characters long\n" +
+                    "- Include a capital letter\n" +
+                    "- Include a special character\n" +
+                    "- Include a number",
+            fontSize = 14.sp,
+            lineHeight = 16.sp,
+        )
     }
 }
 
@@ -184,9 +226,13 @@ private fun SignupScreenPreview() {
             setEmail = {},
             password = "",
             setPassword = {},
-            onSignUpClick = {},
             isPasswordVisible = false,
-            togglePasswordVisibility = {}
+            togglePasswordVisibility = {},
+            confirmPassword = "",
+            setConfirmPassword = {},
+            isConfirmPasswordVisible = false,
+            toggleConfirmPasswordVisibility = {},
+            onSignUpClick = {}
         )
     }
 }
